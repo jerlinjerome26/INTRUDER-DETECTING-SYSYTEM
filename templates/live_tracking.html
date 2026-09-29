@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI-SecureTrack | Live Tracking</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f7fb;
+            color: #111827;
+        }
+
+        .container {
+            padding: 25px;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .camera-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 900px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        video {
+            width: 100%;
+            max-width: 800px;
+            display: block;
+            background: #111827;
+            border-radius: 10px;
+            margin-top: 15px;
+            min-height: 400px;
+            object-fit: cover;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 8px;
+            font-size: 15px;
+        }
+
+        #startBtn {
+            background: #2563eb;
+            color: white;
+        }
+
+        #stopBtn {
+            background: #dc2626;
+            color: white;
+        }
+
+        #startBtn:hover {
+            background: #1d4ed8;
+        }
+
+        #stopBtn:hover {
+            background: #b91c1c;
+        }
+
+        .status-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            max-width: 900px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        #detectionStatus {
+            font-size: 20px;
+            font-weight: bold;
+            white-space: pre-line;
+        }
+
+        .camera-status {
+            padding: 10px;
+            margin-top: 10px;
+            background: white;
+            border-radius: 8px;
+            max-width: 900px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- PAGE TITLE -->
+
+    <h1>📍 Live Tracking</h1>
+
+
+    <!-- BACK BUTTON -->
+
+    <a class="back" href="/dashboard">
+
+        ← Back to Dashboard
+
+    </a>
+
+
+    <hr>
+
+
+    <!-- CAMERA INFORMATION -->
+
+    <h2>Live Camera Monitoring</h2>
+
+
+    <p>
+
+        Camera:
+
+        <strong>{{ camera }}</strong>
+
+    </p>
+
+
+    <div class="camera-status">
+
+        Status:
+
+        <strong id="cameraStatus">
+            Waiting for camera...
+        </strong>
+
+    </div>
+
+
+    <!-- CAMERA -->
+
+    <div class="camera-box">
+
+
+        <video
+            id="video"
+            autoplay
+            playsinline>
+        </video>
+
+
+        <!-- START CAMERA -->
+
+        <button
+            id="startBtn"
+            onclick="startCamera()">
+
+            📷 Start Camera
+
+        </button>
+
+
+        <!-- STOP CAMERA -->
+
+        <button
+            id="stopBtn"
+            onclick="stopCamera()">
+
+            🛑 Stop Camera
+
+        </button>
+
+
+    </div>
+
+
+    <!-- DETECTION STATUS -->
+
+    <div class="status-box">
+
+        <h2>Tracking Status</h2>
+
+        <p id="detectionStatus">
+
+            No detection yet.
+
+        </p>
+
+    </div>
+
+
+</div>
+
+
+<!--
+    Hidden canvas.
+    Used to capture frames from the webcam
+-->
+
+<canvas
+    id="canvas"
+    style="display:none;">
+</canvas>
+
+
+
+<script>
+
+
+// ==================================================
+// VARIABLES
+// ==================================================
+
+let video = document.getElementById("video");
+
+let canvas = document.getElementById("canvas");
+
+let stream = null;
+
+let detectionInterval = null;
+
+
+
+// ==================================================
+// START CAMERA
+// ==================================================
+
+async function startCamera() {
+
+    try {
+
+        // Ask browser for camera
+
+        stream = await navigator.mediaDevices.getUserMedia({
+
+            video: true,
+
+            audio: false
+
+        });
+
+
+        // Show camera in video element
+
+        video.srcObject = stream;
+
+
+        // Update status
+
+        document.getElementById("cameraStatus").innerText =
+            "🟢 Camera Active";
+
+
+        document.getElementById("detectionStatus").innerText =
+            "🟢 Camera started.\nDetecting faces...";
+
+
+        // Start detection every 1 second
+
+        if (detectionInterval) {
+
+            clearInterval(detectionInterval);
+
+        }
+
+
+        detectionInterval = setInterval(
+
+            sendFrameForDetection,
+
+            1000
+
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Camera error:",
+            error
+        );
+
+
+        document.getElementById("cameraStatus").innerText =
+            "🔴 Camera unavailable";
+
+
+        document.getElementById("detectionStatus").innerText =
+            "❌ Camera access denied or unavailable.\nPlease allow camera access.";
+
+    }
+
+}
+
+
+
+// ==================================================
+// STOP CAMERA
+// ==================================================
+
+function stopCamera() {
+
+
+    // Stop camera tracks
+
+    if (stream) {
+
+        stream
+            .getTracks()
+            .forEach(function(track) {
+
+                track.stop();
+
+            });
+
+
+        stream = null;
+
+    }
+
+
+    // Stop detection
+
+    if (detectionInterval) {
+
+        clearInterval(detectionInterval);
+
+        detectionInterval = null;
+
+    }
+
+
+    // Remove camera stream
+
+    video.srcObject = null;
+
+
+    // Update status
+
+    document.getElementById("cameraStatus").innerText =
+        "🟡 Camera Stopped";
+
+
+    document.getElementById("detectionStatus").innerText =
+        "Detection stopped.";
+
+}
+
+
+
+// ==================================================
+// SEND FRAME TO FLASK
+// ==================================================
+
+async function sendFrameForDetection() {
+
+
+    // Check camera
+
+    if (!stream) {
+
+        return;
+
+    }
+
+
+    // Check video size
+
+    if (
+        video.videoWidth === 0 ||
+        video.videoHeight === 0
+    ) {
+
+        return;
+
+    }
+
+
+    // Set canvas size
+
+    canvas.width = video.videoWidth;
+
+    canvas.height = video.videoHeight;
+
+
+    // Get canvas context
+
+    let context = canvas.getContext("2d");
+
+
+    // Copy camera frame to canvas
+
+    context.drawImage(
+
+        video,
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+
+    // Convert image to Base64
+
+    let imageData =
+        canvas.toDataURL("image/jpeg");
+
+
+    try {
+
+
+        // Send image to Flask
+
+        let response = await fetch(
+
+            "/detect-frame",
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    image: imageData
+
+                })
+
+            }
+
+        );
+
+
+        // Convert response to JSON
+
+        let result =
+            await response.json();
+
+
+        console.log(
+            "Detection result:",
+            result
+        );
+
+
+
+        // ==================================================
+        // SUCCESS
+        // ==================================================
+
+        if (result.success) {
+
+
+            // Face detected
+
+            if (
+
+                result.faces > 0 &&
+
+                result.results &&
+
+                result.results.length > 0
+
+            ) {
+
+
+                // Get first detected person
+
+                let person =
+                    result.results[0];
+
+
+                // Show result
+
+                document.getElementById(
+                    "detectionStatus"
+                ).innerText =
+
+                    "🟢 " +
+                    person.status +
+
+                    "\nName: " +
+                    person.name +
+
+                    "\nConfidence: " +
+                    person.confidence;
+
+            }
+
+
+            // No face
+
+            else {
+
+                document.getElementById(
+                    "detectionStatus"
+                ).innerText =
+
+                    "🟡 No face detected.";
+
+            }
+
+        }
+
+
+        // ==================================================
+        // FLASK ERROR
+        // ==================================================
+
+        else {
+
+            document.getElementById(
+                "detectionStatus"
+            ).innerText =
+
+                "❌ Detection error: " +
+                result.message;
+
+        }
+
+    }
+
+
+    catch (error) {
+
+
+        console.error(
+
+            "Detection request failed:",
+
+            error
+
+        );
+
+
+        document.getElementById(
+            "detectionStatus"
+        ).innerText =
+
+            "❌ Unable to connect to detection system.";
+
+    }
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>

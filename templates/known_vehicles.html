@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Known Vehicles</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <h1>Known Vehicles</h1>
+
+    <p>
+        <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </p>
+
+    <hr>
+
+    <h2>Add Known Vehicle</h2>
+
+    <form action="{{ url_for('add_known_vehicle') }}" method="POST">
+
+        <p>
+            <input type="text"
+                   name="vehicle_number"
+                   placeholder="Vehicle Number"
+                   required>
+        </p>
+
+        <p>
+            <input type="text"
+                   name="owner_name"
+                   placeholder="Owner Name"
+                   required>
+        </p>
+
+        <p>
+            <input type="text"
+                   name="brand"
+                   placeholder="Brand"
+                   required>
+        </p>
+
+        <p>
+            <input type="text"
+                   name="model"
+                   placeholder="Model"
+                   required>
+        </p>
+
+        <p>
+            <input type="text"
+                   name="colour"
+                   placeholder="Colour"
+                   required>
+        </p>
+
+        <button type="submit">
+            Add Vehicle
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Registered Vehicles</h2>
+
+    {% if vehicles %}
+
+        {% for vehicle in vehicles %}
+
+            <div>
+                <p>
+                    <strong>Vehicle Number:</strong>
+                    {{ vehicle["vehicle_number"] }}
+                </p>
+
+                <p>
+                    <strong>Owner:</strong>
+                    {{ vehicle["owner_name"] }}
+                </p>
+
+                <p>
+                    <strong>Brand:</strong>
+                    {{ vehicle["brand"] }}
+                </p>
+
+                <p>
+                    <strong>Model:</strong>
+                    {{ vehicle["model"] }}
+                </p>
+
+                <p>
+                    <strong>Colour:</strong>
+                    {{ vehicle["colour"] }}
+                </p>
+
+                <hr>
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No known vehicles added yet.</p>
+
+    {% endif %}
+
+</body>
+</html>

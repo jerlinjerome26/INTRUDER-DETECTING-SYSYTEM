@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Known Persons - AI-SecureTrack</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2>🛡️ AI-SecureTrack</h2>
+
+        <nav>
+            <a href="/dashboard">🏠 Dashboard</a>
+            <a href="/known-persons" class="active">👤 Known Persons</a>
+            <a href="/known-vehicles">🚗 Known Vehicles</a>
+            <a href="/security-alerts">🚨 Security Alerts</a>
+            <a href="/live-tracking?camera=Camera-01">📍 Live Tracking</a>
+            <a href="/cameras">📹 Cameras</a>
+            <a href="#">📊 Reports</a>
+        </nav>
+
+        <a href="/logout" class="logout">🚪 Logout</a>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="page-header">
+
+            <h1>Known Persons</h1>
+
+            <p>
+                Add and manage people who are authorized or known to the system.
+            </p>
+
+        </div>
+
+
+        <!-- Add Known Person -->
+        <div class="card">
+
+            <h2>➕ Add Known Person</h2>
+
+            <form method="POST"
+                  action="/add-known-person"
+                  enctype="multipart/form-data">
+
+                <div class="form-group">
+
+                    <label>Person Name</label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Enter person's name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Person ID</label>
+
+                    <input
+                        type="text"
+                        name="person_id"
+                        placeholder="Enter ID"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Description</label>
+
+                    <input
+                        type="text"
+                        name="description"
+                        placeholder="Example: Student, Staff, Security"
+                    >
+
+                </div>
+
+
+                <!-- PHOTO UPLOAD -->
+                <div class="form-group">
+
+                    <label>Person Photo</label>
+
+                    <input
+                        type="file"
+                        name="photo"
+                        accept="image/*"
+                        required
+                    >
+
+                    <small>
+                        Upload a clear photo of the person's face.
+                    </small>
+
+                </div>
+
+
+                <button type="submit" class="btn-primary">
+                    ➕ Add Person
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- Registered Persons -->
+        <div class="card">
+
+            <h2>👥 Registered Known Persons</h2>
+
+            {% if persons %}
+
+                {% for person in persons %}
+
+                    <div class="person-item">
+
+                        <h3>{{ person["name"] }}</h3>
+
+                        <p>
+                            <strong>ID:</strong>
+                            {{ person["person_id"] }}
+                        </p>
+
+                        <p>
+                            <strong>Description:</strong>
+                            {{ person["description"] }}
+                        </p>
+
+                        {% if person["photo"] %}
+
+                            <img
+                                src="{{ url_for('uploaded_file', filename=person['photo']) }}"
+                                width="120"
+                                alt="Person Photo"
+                            >
+
+                        {% endif %}
+
+                    </div>
+
+                    <hr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">👤</div>
+
+                    <h3>No Known Persons Added</h3>
+
+                    <p>
+                        Add a person using the form above.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

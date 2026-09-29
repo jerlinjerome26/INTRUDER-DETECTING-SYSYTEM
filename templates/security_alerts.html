@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Security Alerts</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <h1>🚨 Security Alerts</h1>
+
+    <a href="/dashboard">← Back to Dashboard</a>
+
+    <hr>
+
+    <h2>Alert History</h2>
+
+    <a href="/create-test-alert">
+        <button type="button">🚨 Create Test Alert</button>
+    </a>
+
+    <a href="/create-test-detection">
+        <button type="button">⚠️ Simulate Unknown Person</button>
+    </a>
+    
+    <hr>
+    {% if alerts %}
+
+        {% for alert in alerts %}
+
+            <div>
+
+                <strong>Alert Type:</strong>
+                {{ alert["alert_type"] }}
+
+                <br>
+
+                <strong>Message:</strong>
+                {{ alert["message"] }}
+
+                <br>
+
+                <strong>Time:</strong>
+                {{ alert["timestamp"] }}
+
+                <br>
+
+                <strong>Status:</strong>
+                {{ alert["status"] }}
+
+                <hr>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No security alerts available.</p>
+
+    {% endif %}
+
+</body>
+
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI-SecureTrack | Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="dashboard">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="logo">
+                🛡️
+                <span>AI-SecureTrack</span>
+            </div>
+
+            <nav>
+
+                <a href="#" class="active">
+                    🏠 Dashboard
+                </a>
+
+                <a href="#">
+                    👤 Known Persons
+                </a>
+
+                <a href="{{ url_for('known_vehicles')}}">
+                    🚗 Known Vehicles
+                </a>
+
+                <a href="{{ url_for('security_alerts') }}">
+                    🚨 Security Alerts
+                </a>
+
+                <a href="{{ url_for('live_tracking') }}">
+                    📍 Live Tracking
+                </a>
+
+                <a href="/cameras">
+                    📹 Cameras
+                </a>
+
+                <a href="#">
+                    📊 Reports
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <a href="/logout">
+                    🚪 Logout
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- TOP BAR -->
+            <header class="topbar">
+
+                <div>
+                    <h1>Security Dashboard</h1>
+
+                    <p>
+                        Welcome back, {{ username }}
+                    </p>
+                </div>
+
+                <div class="system-status">
+                    🟢 System Online
+                </div>
+
+            </header>
+
+
+            <!-- STATISTICS -->
+            <section class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        👤
+                    </div>
+
+                    <div>
+                        <h3>Known Persons</h3>
+
+                        <div class="stat-number">
+                            {{ person_count }}
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🚗
+                    </div>
+
+                    <div>
+                        <h3>Known Vehicles</h3>
+
+                        <div class="stat-number">
+                            {{ vehicle_count }}
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon warning">
+                        ⚠️
+                    </div>
+
+                    <div>
+                        <h3>Unknown Detections</h3>
+
+                        <div class="stat-number">
+                            {{ unknown_count }}
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon danger">
+                        🚨
+                    </div>
+
+                    <div>
+                        <h3>Active Alerts</h3>
+
+                        <div class="stat-number">
+                            {{ alert_count }}
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SECURITY MONITOR -->
+            <section class="content-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2>Live Security Monitoring</h2>
+
+                        <p>
+                            Monitor people and vehicles around the building
+                        </p>
+                    </div>
+
+                    <span class="live-badge">
+                        ● LIVE
+                    </span>
+
+                </div>
+
+
+                <div class="monitor-box">
+
+                    <div class="camera-placeholder">
+
+                        <div class="camera-icon">
+                            📹
+                        </div>
+
+                        <h3>Camera Feed</h3>
+
+                        <p>
+                            Camera feed will appear here
+                        </p>
+
+                        <button>
+                            Connect Camera
+                        </button>
+
+                    </div>
+
+
+                    <div class="monitor-info">
+
+                        <h3>Detection Status</h3>
+
+                        <div class="status-row">
+                            <span>Person Detection</span>
+                            <span class="online">Active</span>
+                        </div>
+
+                        <div class="status-row">
+                            <span>Vehicle Detection</span>
+                            <span class="online">Active</span>
+                        </div>
+
+                        <div class="status-row">
+                            <span>Face Recognition</span>
+                            <span class="offline">Waiting</span>
+                        </div>
+
+                        <div class="status-row">
+                            <span>Number Plate Recognition</span>
+                            <span class="offline">Waiting</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- RECENT ALERTS -->
+            <section class="content-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2>Recent Security Alerts</h2>
+
+                        <p>
+                            Latest unknown person and vehicle detections
+                        </p>
+                    </div>
+
+                    <button class="view-button">
+                        View All
+                    </button>
+
+                </div>
+
+
+                <div class="empty-alerts">
+
+                    <div>
+                        🔔
+                    </div>
+
+                    <h3>No Security Alerts</h3>
+
+                    <p>
+                        No unknown person or vehicle has been detected yet.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- QUICK ACTIONS -->
+            <section class="content-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2>Quick Actions</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+                    <button onclick="window.location.href='/known-persons'">
+                        👤 Add Known Person
+                    </button>
+
+                    <button>
+                        🚗 Add Known Vehicle
+                    </button>
+
+                    <button>
+                        📹 Add Camera
+                    </button>
+
+                    <button>
+                        📊 Generate Report
+                    </button>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+<div id="personForm" style="display:none;">
+
+    <h2>Add Known Person</h2>
+
+    <form>
+
+        <label>Person Name:</label>
+
+        <input type="text" placeholder="Enter name" required>
+
+        <br><br>
+
+        <label>Person ID:</label>
+
+        <input type="text" placeholder="Enter ID" required>
+
+        <br><br>
+
+        <button type="submit">
+            Save Person
+        </button>
+
+        <button type="button" onclick="closePersonForm()">
+            Cancel
+        </button>
+
+    </form>
+
+</div>
+
+
+<script>
+
+function showPersonForm() {
+    document.getElementById("personForm").style.display = "block";
+}
+
+function closePersonForm() {
+    document.getElementById("personForm").style.display = "none";
+}
+
+</script>
+
+</body>
+
+</html>

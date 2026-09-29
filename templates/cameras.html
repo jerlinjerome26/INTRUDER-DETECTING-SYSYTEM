@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Cameras - AI-SecureTrack</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <h1>📹 Camera Management</h1>
+
+    <a href="/dashboard">← Back to Dashboard</a>
+
+    <hr>
+
+    <h2>Available Cameras</h2>
+
+    <div>
+        <h3>📹 Camera-01</h3>
+
+        <p>Location: Main Entrance</p>
+
+        <p>Status: 🟢 Online</p>
+
+        <a href="/live-tracking?camera=Camera-01">
+            <button type="button">Connect Camera</button>
+        </a>
+    </div>
+
+    <hr>
+
+    <div>
+        <h3>📹 Camera-02</h3>
+
+        <p>Location: Parking Area</p>
+
+        <p>Status: 🔴 Offline</p>
+
+        <a href="/live-tracking?camera=Camera-02">
+            <button type="button">Connect Camera</button>
+        </a>
+    </div>
+
+</body>
+
+</html>
